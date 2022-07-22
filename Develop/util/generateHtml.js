@@ -83,21 +83,12 @@ const generateTeam = team => {
         .join(""));
     }
     
-    // html.push(team['engineers']
-    //     .filter(employee => employee.getRole() === "Engineer")
-    //     .map(engineer => generateEngineer(engineer))
-    //     .join("")
-    // );
-    // html.push(team['interns']
-    //     .filter(employee => employee.getRole() === "Intern")
-    //     .map(intern => generateIntern(intern))
-    //     .join("")
-    // );
 
     return html.join("");
 }
 
 // export function to generate entire page
+// TODO: no style.css provided
 module.exports = team => {
 
     return `
@@ -111,7 +102,6 @@ module.exports = team => {
     <title>My Team</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/c502137733.js"></script>
 </head>
 

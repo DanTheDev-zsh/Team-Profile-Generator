@@ -24,7 +24,7 @@ function writeToFile(fileName, data) {
     }
 }
 
-async function init() {
+function init() {
     let responses = {};
     responses['engineers'] = [];
     responses['interns'] = [];
@@ -37,9 +37,9 @@ async function init() {
     /**
      * @param {*} selected is the returned value from selectOption()
      */
-    const managerOpt_Handler = (selected) => {
+    const managerOpt_Handler = async (selected) => {
         if (selected === teamManagerOpts[0]) {
-            // recursive case
+            // recursive case: 
             console.log("I'm about to create a new Engineer");
             inquirer.prompt([
                 {
@@ -63,7 +63,7 @@ async function init() {
                     name: 'engineer_GHusername',
                 }
             ])
-                .then((response) => {
+                .then(async (response) => {
 
                     responses['engineers'].push(
                         new Engineer(response.engineer_Name,
@@ -71,14 +71,22 @@ async function init() {
                             response.engineer_Email,
                             response.engineer_GHusername)
                     );
-                    selectOption(managerOpt_Handler)
-
+                    try {
+                        const tmp = await selectOption(managerOpt_Handler);
+                        managerOpt_Handler(tmp.teamManager_Option);
+                    } catch (error) {
+                        if (error.isTtyError) {
+                            console.error('Error: Prompt cannot be rendered in the current environment (at selectOption block)');
+                        } else {
+                            console.error('Error: Something went wrong, not because of rendering at the current environment (at selectOption block)', { error });
+                        }
+                    }
                 })
                 .catch((error) => {
                     if (error.isTtyError) {
-                        console.error('Error: Prompt cannot be rendered in the current environment (at add Engineer question block)')  ;
+                        console.error('Error: Prompt cannot be rendered in the current environment (at add Engineer question block)');
                     } else {
-                        console.error('Error: Something went wrong, not because of rendering at the current environment (at add Engineer question block) || ', {error});
+                        console.error('Error: Something went wrong, not because of rendering at the current environment (at add Engineer question block) || ', { error });
                     }
                 });
 
@@ -86,7 +94,7 @@ async function init() {
             // managerOpt_Handler(opt)
 
         } else if (selected === teamManagerOpts[1]) {
-            // recursive case
+            // recursive case: Intern
             console.log("I'm about to create a new Intern");
             inquirer.prompt([
                 {
@@ -110,7 +118,7 @@ async function init() {
                     name: 'intern_School',
                 }
             ])
-                .then((response) => {
+                .then(async (response) => {
 
                     responses['interns'].push(
                         new Intern(response.intern_Name,
@@ -118,9 +126,17 @@ async function init() {
                             response.intern_Email,
                             response.intern_School)
                     );
+                    try {
+                        const tmp = await selectOption(managerOpt_Handler);
+                        managerOpt_Handler(tmp.teamManager_Option);
+                    } catch (error) {
+                        if (error.isTtyError) {
+                            console.error('Error: Prompt cannot be rendered in the current environment (at selectOption block)');
+                        } else {
+                            console.error('Error: Something went wrong, not because of rendering at the current environment (at selectOption block)', { error });
+                        }
+                    }
 
-                    selectOption(managerOpt_Handler);
-                    
                 })
                 .catch((error) => {
                     if (error.isTtyError) {
@@ -130,40 +146,24 @@ async function init() {
                     }
                 });
 
-            // const opt = selectOption()
-            // managerOpt_Handler(opt)
-
         } else if (selected === teamManagerOpts[2]) {
             // base case
             console.log("I'm about to writeFile index.html and exit program");
             writeToFile(indexHtml, generateHtml(responses))
             return;
         } else {
-            console.error("error selected is " + selected, "exiting program");
+            console.error("error selected is " + selected, ": exiting program");
             return;
         }
     }
 
-    function selectOption(handler) {
-        inquirer.prompt({
+    async function selectOption(handler) {
+        return await inquirer.prompt({
             type: 'list',
             message: 'Please select from one of three options below.',
             choices: teamManagerOpts,
             name: 'teamManager_Option'
         })
-            .then((response) => {
-                console.log(`!!!!my selected was ${response.teamManager_Option}`);
-                handler(response.teamManager_Option);
-            
-            })
-            .catch((error) => {
-                if (error.isTtyError) {
-                    console.error('Error: Prompt cannot be rendered in the current environment (at selectOption block)');
-                } else {
-                    console.error('Error: Something went wrong, not because of rendering at the current environment (at selectOption block)', {error});
-                }
-            });
-
     }
 
     inquirer
@@ -213,7 +213,6 @@ async function init() {
                 console.error({ status: 'Error: Something went wrong, not because of rendering at the current environment (at manager question block)', error });
             }
         });
-
 
 }
 
