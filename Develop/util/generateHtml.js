@@ -1,3 +1,8 @@
+const employee = require('../lib/Employee')
+const manager = require('../lib/Manager')
+const engineer = require('../lib/Engineer')
+const intern = require('../lib/Intern')
+
 // create the team
 const generateTeam = team => {
 
@@ -57,26 +62,39 @@ const generateTeam = team => {
 </div>
         `;
     };
-
     const html = [];
 
-    html.push(team
-        .filter(employee => employee.getRole() === "Manager")
-        .map(manager => generateManager(manager))
-    );
-    html.push(team
+    // console.log(typeof(team));
+    // console.log(team);
+    // console.log("my getRole is ",team['teamManager_Obj'].getRole());
+
+    html.push(generateManager(team['teamManager_Obj']));
+    if(team['engineers']) {
+        html.push(team['engineers']
         .filter(employee => employee.getRole() === "Engineer")
         .map(engineer => generateEngineer(engineer))
-        .join("")
-    );
-    html.push(team
+        .join(""));
+    }
+
+    if(team['interns']){
+        html.push(team['interns']
         .filter(employee => employee.getRole() === "Intern")
         .map(intern => generateIntern(intern))
-        .join("")
-    );
+        .join(""));
+    }
+    
+    // html.push(team['engineers']
+    //     .filter(employee => employee.getRole() === "Engineer")
+    //     .map(engineer => generateEngineer(engineer))
+    //     .join("")
+    // );
+    // html.push(team['interns']
+    //     .filter(employee => employee.getRole() === "Intern")
+    //     .map(intern => generateIntern(intern))
+    //     .join("")
+    // );
 
     return html.join("");
-
 }
 
 // export function to generate entire page
